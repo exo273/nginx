@@ -11,6 +11,27 @@ services:
       - "80:80"
     networks:
       - restaurant-network
+    labels:
+      # Habilitar Traefik
+      - "traefik.enable=true"
+      
+      # Configuración HTTP (redirige a HTTPS)
+      - "traefik.http.routers.nginx-http.rule=Host(`alpha.kvernicola.cl`)"
+      - "traefik.http.routers.nginx-http.entrypoints=web"
+      - "traefik.http.routers.nginx-http.middlewares=redirect-to-https"
+      
+      # Middleware de redirección HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      
+      # Configuración HTTPS
+      - "traefik.http.routers.nginx-https.rule=Host(`alpha.kvernicola.cl`)"
+      - "traefik.http.routers.nginx-https.entrypoints=websecure"
+      - "traefik.http.routers.nginx-https.tls=true"
+      - "traefik.http.routers.nginx-https.tls.certresolver=letsencrypt"
+      
+      # Puerto del servicio
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
 networks:
   restaurant-network:
