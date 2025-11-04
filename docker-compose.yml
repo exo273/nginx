@@ -7,9 +7,18 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
+      # Router HTTPS
+      - "traefik.http.routers.nginx-sigr-secure.rule=Host(`alpha.kvernicola.cl`)"
+      - "traefik.http.routers.nginx-sigr-secure.entrypoints=websecure"
+      - "traefik.http.routers.nginx-sigr-secure.tls=true"
+      - "traefik.http.routers.nginx-sigr-secure.tls.certresolver=letsencrypt"
+      # Router HTTP (redirect a HTTPS)
       - "traefik.http.routers.nginx-sigr.rule=Host(`alpha.kvernicola.cl`)"
-      - "traefik.http.routers.nginx-sigr.entrypoints=websecure"
-      - "traefik.http.routers.nginx-sigr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nginx-sigr.entrypoints=web"
+      - "traefik.http.routers.nginx-sigr.middlewares=redirect-to-https"
+      # Middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # Service
       - "traefik.http.services.nginx-sigr.loadbalancer.server.port=80"
       - "traefik.docker.network=dokploy-network"
     healthcheck:
