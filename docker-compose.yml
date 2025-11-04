@@ -14,4 +14,5 @@ services:
 
 networks:
   restaurant-network:
-    external: true
+    driver: bridge
+    name: restaurant-network
