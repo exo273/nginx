@@ -1,5 +1,5 @@
 services:
-  app:
+  nginx:
     build:
       context: .
       dockerfile: Dockerfile
